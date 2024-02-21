@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "chromium-kiosk"
+version = "0.1.0"
+description = ""
+authors = ["Jeremy Hettenhouser <jhettenh@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+playwright = "^1.41.2"
+keyboard = "^0.13.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
