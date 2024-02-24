@@ -5,7 +5,7 @@ import keyboard
 import time
 
 from playwright.sync_api import sync_playwright
-
+from pynput import keyboard
 
 def init(user_data_dir):
     os.makedirs(user_data_dir, exist_ok=True)
@@ -51,13 +51,26 @@ def main():
             browser.close()
             exit(0)
 
-        keyboard.add_hotkey('ctrl+shift+x', handle_exit)
+        def for_canonical(f):
+            return lambda k: f(l.canonical(k))
+
+        hotkey = keyboard.HotKey(
+            keyboard.HotKey.parse('<ctrl>+<shift>+x'), handle_exit
+        )
+
+        # keyboard.add_hotkey('ctrl+shift+x', handle_exit)
 
         refresh_interval = 60 * 60 * 24
         last_refresh_time = time.time()
 
         while True:
             try:
+                with keyboard.Listener(
+                        on_press=for_canonical(hotkey.press),
+                        on_release=for_canonical(hotkey.release)
+                ) as l:
+                    l.join()
+
                 page.wait_for_timeout(1000)
 
                 current_time = time.time()
