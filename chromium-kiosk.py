@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import os
 import argparse
-import keyboard
 import time
 
 from playwright.sync_api import sync_playwright
 from pynput import keyboard
+
 
 def init(user_data_dir):
     os.makedirs(user_data_dir, exist_ok=True)
@@ -33,6 +33,7 @@ def main():
 
     with sync_playwright() as p:
         browser = p.chromium.launch_persistent_context(headless=False, downloads_path=os.getcwd(),
+                                                       ignore_default_args=['--enable-automation'],
                                                        args=['--disable-dev-shm-usage',
                                                              '--disable-blink-features=AutomationControlled',
                                                              '--disable-infobars',
@@ -58,9 +59,7 @@ def main():
             keyboard.HotKey.parse('<ctrl>+<shift>+x'), handle_exit
         )
 
-        # keyboard.add_hotkey('ctrl+shift+x', handle_exit)
-
-        refresh_interval = 60 * 60 * 24
+        refresh_interval = 1000 * 30
         last_refresh_time = time.time()
 
         while True:
@@ -76,6 +75,7 @@ def main():
                 current_time = time.time()
                 if current_time - last_refresh_time >= refresh_interval:
                     refresh_browser(page)
+                    page.goto(args.url)
                     last_refresh_time = current_time
 
             except KeyboardInterrupt:
